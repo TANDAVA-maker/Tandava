@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>TANDAVA 5.4 | Final Build</title>
+<title>TANDAVA 5.6 | Lite Active</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
 <style>
   :root { --bg-void: #020408; --accent-cyan: #00d4ff; --border: rgba(0, 212, 255, 0.3); }
@@ -25,7 +25,7 @@
 <body>
 
 <header>
-  <div class="logo-name">TANDAVA 5.4</div>
+  <div class="logo-name">TANDAVA 5.6</div>
   <button class="hdr-btn" onclick="openSettings()">⚙️ ENGINE</button>
 </header>
 
@@ -66,16 +66,14 @@ async function sendMessage() {
     msgDiv.innerHTML += `<div class="msg user"><div class="msg-bubble">${text}</div></div>`;
     input.value = '';
 
-    // THE 2026 STABLE PATH (Using the versioned model name)
-    const finalUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${key}`;
+    // LITE MODEL PATH (More free quota for unverified users)
+    const finalUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-8b:generateContent?key=${key}`;
 
     try {
         const response = await fetch(finalUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: text }] }]
-            })
+            body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
         });
         
         const data = await response.json();
@@ -84,14 +82,15 @@ async function sendMessage() {
         if (data.candidates && data.candidates[0].content) {
             reply = data.candidates[0].content.parts[0].text;
         } else if (data.error) {
-            // IF 2.0 fails, it means your account is newer - it will try 1.5-flash as a fallback
             reply = "GOOGLE SAYS: " + data.error.message;
+        } else {
+            reply = "SYSTEM: Response Error. Try a new API key.";
         }
         
         msgDiv.innerHTML += `<div class="msg assistant"><div class="msg-bubble">${reply}</div></div>`;
         msgDiv.scrollTop = msgDiv.scrollHeight;
     } catch (e) {
-        msgDiv.innerHTML += `<div class="msg assistant"><div class="msg-bubble" style="color:red;">Network Error: ${e.message}</div></div>`;
+        msgDiv.innerHTML += `<div class="msg assistant"><div class="msg-bubble" style="color:red;">Network: ${e.message}</div></div>`;
     }
 }
 </script>
