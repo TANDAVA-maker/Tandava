@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>TANDAVA 5.0 | Final Handshake</title>
+<title>TANDAVA 5.2 | Final Stable</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
 <style>
   :root { --bg-void: #020408; --accent-cyan: #00d4ff; --border: rgba(0, 212, 255, 0.3); }
@@ -25,7 +25,7 @@
 <body>
 
 <header>
-  <div class="logo-name">TANDAVA 5.0</div>
+  <div class="logo-name">TANDAVA 5.2</div>
   <button class="hdr-btn" onclick="openSettings()">⚙️ ENGINE</button>
 </header>
 
@@ -39,7 +39,7 @@
 <div class="modal-overlay" id="settingsModal">
   <div class="modal-content">
     <h3 style="color:var(--accent-cyan); text-align:center;">ENGINE CONFIG</h3>
-    <input type="password" id="apiKey" style="width:100%; padding:15px; margin-top:20px; background:#0d1e2e; color:white; border:1px solid var(--border); border-radius:8px;" placeholder="Paste Google API Key (AIza...)">
+    <input type="password" id="apiKey" style="width:100%; padding:15px; margin-top:20px; background:#0d1e2e; color:white; border:1px solid var(--border); border-radius:8px;" placeholder="Paste Gemini API Key">
     <div style="display:flex; gap:10px; margin-top:20px;">
       <button class="hdr-btn" style="flex:1;" onclick="closeSettings()">CLOSE</button>
       <button class="hdr-btn" style="flex:1;" onclick="saveSettings()">SAVE</button>
@@ -54,7 +54,6 @@ function closeSettings() { document.getElementById('settingsModal').style.displa
 function saveSettings() {
     localStorage.setItem('t_key', document.getElementById('apiKey').value.trim());
     closeSettings();
-    alert("Key Saved!");
 }
 
 async function sendMessage() {
@@ -67,8 +66,8 @@ async function sendMessage() {
     msgDiv.innerHTML += `<div class="msg user"><div class="msg-bubble">${text}</div></div>`;
     input.value = '';
 
-    // GOOGLE V5.0 TUNNEL LOGIC
-    const finalUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+    // THE 2026 STABLE HANDSHAKE
+    const finalUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-3-flash:generateContent?key=${key}`;
 
     try {
         const response = await fetch(finalUrl, {
@@ -85,18 +84,17 @@ async function sendMessage() {
         if (data.candidates && data.candidates[0].content) {
             reply = data.candidates[0].content.parts[0].text;
         } else if (data.error) {
-            reply = "GOOGLE ERROR: " + data.error.message;
+            reply = "DEBUG: " + data.error.message;
         } else {
-            reply = "SYSTEM ERROR: Format Mismatch";
+            reply = "SYSTEM: Data Mismatch - Check API Console";
         }
         
         msgDiv.innerHTML += `<div class="msg assistant"><div class="msg-bubble">${reply}</div></div>`;
         msgDiv.scrollTop = msgDiv.scrollHeight;
     } catch (e) {
-        msgDiv.innerHTML += `<div class="msg assistant"><div class="msg-bubble" style="color:red;">Network Error: ${e.message}</div></div>`;
+        msgDiv.innerHTML += `<div class="msg assistant"><div class="msg-bubble" style="color:red;">Network: ${e.message}</div></div>`;
     }
 }
 </script>
 </body>
 </html>
-
