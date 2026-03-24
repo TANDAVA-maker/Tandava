@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>TANDAVA AI v4.1 | Universal Fix</title>
+<title>TANDAVA AI v4.2 | Force Logic</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600&family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
 <style>
   :root { --bg-void: #020408; --bg-deep: #060d14; --bg-panel: #0a1520; --bg-input: #0d1e2e; --accent-cyan: #00d4ff; --text-bright: #e8f4ff; --text-dim: #3a5a78; --border: rgba(0, 212, 255, 0.15); }
@@ -27,7 +27,7 @@
 <body>
 
 <header>
-  <div class="logo-name">TANDAVA 4.1</div>
+  <div class="logo-name">TANDAVA 4.2</div>
   <button class="hdr-btn" onclick="openSettings()">⚙️ ENGINE</button>
 </header>
 
@@ -90,13 +90,17 @@ async function sendMessage() {
         const data = await response.json();
         
         let reply = "";
-        // THE UNIVERSAL DETECTION FIX:
+        
+        // ULTIMATE DEEP PARSING
         if (data.choices && data.choices[0] && data.choices[0].message) {
             reply = data.choices[0].message.content;
         } else if (data.candidates && data.candidates[0] && data.candidates[0].content) {
             reply = data.candidates[0].content.parts[0].text;
+        } else if (data.error) {
+            reply = "GOOGLE ERROR: " + data.error.message;
         } else {
-            reply = "ERROR: " + (data.error ? data.error.message : "Unrecognized response format.");
+            // If all else fails, show the raw JSON so we can debug it
+            reply = "RAW RESPONSE: " + JSON.stringify(data).substring(0, 500);
         }
         
         msgDiv.innerHTML += `<div class="msg assistant"><div class="msg-bubble">${reply}</div></div>`;
