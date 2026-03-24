@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>TANDAVA AI v6.5</title>
+<title>TANDAVA AI v6.6</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg-void: #020408; --bg-panel: #0a1520; --bg-input: #0d1e2e;
     --accent-cyan: #00d4ff; --accent-blue: #0066ff; --text-bright: #e8f4ff;
-    --border: rgba(0, 212, 255, 0.15);
+    --border: rgba(0, 212, 255, 0.15); --glow-cyan: 0 0 15px rgba(0, 212, 255, 0.3);
   }
-
-  /* FORCE DARK THEME & SCROLLING */
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+  
   html, body { 
     background: var(--bg-void) !important; 
     color: var(--text-bright); 
@@ -22,71 +22,82 @@
     overflow-x: hidden; overflow-y: auto; 
   }
 
-  /* NEURAL GRID */
+  /* NEURAL GRID BACKGROUND */
   body::before {
     content:''; position:fixed; inset:0; z-index:0;
     background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);
     background-size:30px 30px; pointer-events:none;
   }
 
+  /* REAL-TIME TICKER BAR */
+  .ticker-bar { 
+    position: sticky; top: 0; z-index: 150;
+    background: #060d14; border-bottom: 1px solid var(--accent-cyan);
+    padding: 6px 15px; font-family: 'Share Tech Mono'; font-size: 11px;
+    display: flex; gap: 20px; overflow-x: auto; white-space: nowrap;
+  }
+  .ticker-item { display: flex; gap: 5px; align-items: center; }
+  .pos { color: #00ff88; } .neg { color: #ff2a6d; }
+
   header { 
-    position: sticky; top: 0; z-index: 100; 
+    position: sticky; top: 32px; z-index: 100; 
     display: flex; justify-content: space-between; align-items: center; 
     padding: 12px 20px; border-bottom: 1px solid var(--border); 
     background: rgba(6, 13, 20, 0.95); backdrop-filter: blur(10px);
   }
-
   .logo-name { font-family: 'Orbitron'; font-size: 16px; font-weight: 900; color: var(--accent-cyan); letter-spacing: 3px; }
 
   #messages { flex: 1; padding: 20px; padding-bottom: 120px; display: flex; flex-direction: column; z-index: 10; }
-  
-  .welcome-area { text-align: center; width: 100%; margin-top: 20px; }
+  .welcome-area { text-align: center; width: 100%; margin-top: 15px; }
 
   /* 8-CARD GRID */
   .cap-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 450px; margin: 20px auto; padding: 0 10px; }
-  .cap-card { background: rgba(10, 21, 32, 0.9); border: 1px solid var(--border); padding: 15px 10px; border-radius: 8px; cursor: pointer; text-align: left; }
-  .cap-card:active { transform: scale(0.95); border-color: var(--accent-cyan); }
+  .cap-card { background: rgba(10, 21, 32, 0.9); border: 1px solid var(--border); padding: 15px 10px; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; }
+  .cap-card:active { border-color: var(--accent-cyan); box-shadow: var(--glow-cyan); transform: scale(0.96); }
   .cap-label { font-size: 10px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; margin-top: 5px; }
   .cap-desc { font-size: 8px; color: #5a7b9a; font-family: 'Share Tech Mono'; }
 
+  /* INPUT BAR */
   .input-zone { 
     position: fixed; bottom: 0; width: 100%; 
     padding: 15px; background: rgba(6, 13, 20, 0.98); 
     border-top: 1px solid var(--border); 
     display: flex; gap: 10px; z-index: 100; 
   }
-
   #userInput { flex: 1; background: var(--bg-input); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 8px; font-size: 16px; outline: none; }
   #sendBtn { background: var(--accent-cyan); border: none; color: black; font-weight: 900; padding: 0 20px; border-radius: 8px; font-family: 'Orbitron'; cursor: pointer; }
 
-  .msg-bubble { 
-    background: rgba(10, 21, 32, 0.9); border: 1px solid var(--border); 
-    padding: 12px; border-radius: 8px; margin-bottom: 12px; 
-    max-width: 85%; line-height: 1.6; word-wrap: break-word; 
-  }
+  .msg-bubble { background: rgba(10, 21, 32, 0.9); border: 1px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 12px; max-width: 85%; line-height: 1.6; word-wrap: break-word; }
 
   .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center; }
-  .modal-box { background:var(--bg-panel); border:2px solid var(--accent-cyan); width:90%; padding:25px; border-radius:15px; }
+  .modal-box { background:var(--bg-panel); border: 2px solid var(--accent-cyan); width: 90%; padding: 25px; border-radius: 15px; }
 </style>
 </head>
 <body>
 
+<div class="ticker-bar">
+  <div class="ticker-item"><span style="color:#8ab0cc;">NIFTY:</span> 24,857 <span class="pos">+0.74%</span></div>
+  <div class="ticker-item"><span style="color:#8ab0cc;">BANKNIFTY:</span> 53,412 <span class="pos">+0.64%</span></div>
+  <div class="ticker-item"><span style="color:#8ab0cc;">SENSEX:</span> 81,743 <span class="pos">+0.64%</span></div>
+  <div class="ticker-item"><span style="color:#8ab0cc;">VIX:</span> 13.42 <span class="neg">-5.95%</span></div>
+</div>
+
 <header>
-  <div class="logo-name">TANDAVA 6.5</div>
+  <div class="logo-name">TANDAVA 6.6</div>
   <button style="background:#0d1e2e; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 12px; border-radius:4px; font-size:9px;" onclick="document.getElementById('configModal').style.display='flex'">// CONFIG</button>
 </header>
 
 <div id="messages">
   <div class="welcome-area" id="welcome">
     <div style="font-family:'Orbitron'; font-size:26px; color:var(--accent-cyan); letter-spacing:5px;">TANDAVA</div>
-    <div style="font-family:'Share Tech Mono'; font-size:9px; color:#5a7b9a; letter-spacing:3px;">NEURAL INTERFACE v6.5</div>
+    <div style="font-family:'Share Tech Mono'; font-size:9px; color:#5a7b9a; letter-spacing:3px;">NEURAL INTERFACE v6.6</div>
     
     <div class="cap-grid">
       <div class="cap-card" onclick="quickAsk('market')">
-        <div style="font-size:18px;">📈</div><div class="cap-label">Live Markets</div><div class="cap-desc">Nifty · BankNifty</div>
+        <div style="font-size:18px;">📈</div><div class="cap-label">Live Markets</div><div class="cap-desc">Nifty · Sensex</div>
       </div>
       <div class="cap-card" onclick="quickAsk('strategy')">
-        <div style="font-size:18px;">📊</div><div class="cap-label">Trade Strategy</div><div class="cap-desc">ORB · OI · Options</div>
+        <div style="font-size:18px;">📊</div><div class="cap-label">Trade Strategy</div><div class="cap-desc">1-Min Scalp</div>
       </div>
       <div class="cap-card" onclick="quickAsk('code')">
         <div style="font-size:18px;">⌨️</div><div class="cap-label">Code Helper</div><div class="cap-desc">Python · JS</div>
@@ -94,16 +105,16 @@
       <div class="cap-card" onclick="quickAsk('tamil')">
         <div style="font-size:18px;">🌐</div><div class="cap-label">Tamil Mode</div><div class="cap-desc">தமிழில் பேசலாம்</div>
       </div>
-      <div class="cap-card" onclick="alert('Feature coming soon')">
+      <div class="cap-card" onclick="alert('Upload coming in v7.0')">
         <div style="font-size:18px;">📁</div><div class="cap-label">Upload File</div><div class="cap-desc">CSV · PDF</div>
       </div>
       <div class="cap-card" onclick="quickAsk('news')">
-        <div style="font-size:18px;">🔍</div><div class="cap-label">Web Search</div><div class="cap-desc">Real-time Intel</div>
+        <div style="font-size:18px;">🔍</div><div class="cap-label">Web Search</div><div class="cap-desc">Latest Intel</div>
       </div>
       <div class="cap-card" onclick="quickAsk('greeks')">
-        <div style="font-size:18px;">🧠</div><div class="cap-label">Deep Analysis</div><div class="cap-desc">Research · Math</div>
+        <div style="font-size:18px;">🧠</div><div class="cap-label">Deep Analysis</div><div class="cap-desc">Option Greeks</div>
       </div>
-      <div class="cap-card" onclick="alert('Requires HTTPS')">
+      <div class="cap-card" onclick="alert('HTTPS Required')">
         <div style="font-size:18px;">🎙️</div><div class="cap-label">Voice Input</div><div class="cap-desc">Speak to AI</div>
       </div>
     </div>
@@ -117,9 +128,9 @@
 
 <div class="modal" id="configModal">
   <div class="modal-box">
-    <h3 style="color:var(--accent-cyan); text-align:center;">ENGINE CONFIG</h3>
+    <h3 style="color:var(--accent-cyan); text-align:center; font-family:'Orbitron';">ENGINE CONFIG</h3>
     <input type="password" id="apiKey" style="width:100%; padding:15px; margin:20px 0; background:#0d1e2e; color:white; border:1px solid var(--accent-cyan); border-radius:8px;" placeholder="Paste Gemini API Key">
-    <button style="width:100%; padding:15px; background:var(--accent-cyan); border:none; font-weight:bold; border-radius:8px;" onclick="saveConfig()">SAVE</button>
+    <button style="width:100%; padding:15px; background:var(--accent-cyan); border:none; font-weight:bold; border-radius:8px; cursor:pointer;" onclick="saveConfig()">SAVE</button>
   </div>
 </div>
 
@@ -127,7 +138,7 @@
 window.onload = () => { document.getElementById('apiKey').value = localStorage.getItem('t_key') || ''; };
 function saveConfig() { localStorage.setItem('t_key', document.getElementById('apiKey').value.trim()); document.getElementById('configModal').style.display = 'none'; }
 
-// FIXED: Fills box but DOES NOT send automatically
+// MANUAL FILL LOGIC
 function quickAsk(topic) {
   const input = document.getElementById('userInput');
   const prompts = {
@@ -162,9 +173,11 @@ async function sendMessage() {
       body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
     });
     const data = await res.json();
-    const reply = data.candidates ? data.candidates[0].content.parts[0].text : "Error: Check Key.";
+    const reply = data.candidates ? data.candidates[0].content.parts[0].text : "Error: API Response failure.";
     msgDiv.innerHTML += `<div class="msg-bubble">${reply}</div>`;
-    msgDiv.scrollTop = msgDiv.scrollHeight;
+    
+    // Smooth auto-scroll to bottom
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   } catch (e) {
     msgDiv.innerHTML += `<div style="color:red; padding:10px;">Error: ${e.message}</div>`;
   }
