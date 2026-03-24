@@ -1,31 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>TANDAVA AI v2.0</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg-void: #020408; --bg-deep: #060d14; --bg-panel: #0a1520; --bg-input: #0d1e2e;
-    --accent-cyan: #00d4ff; --accent-blue: #0066ff; --accent-violet: #7c3aed;
-    --text-bright: #e8f4ff; --text-mid: #8ab0cc; --text-dim: #3a5a78;
-    --border: rgba(0, 212, 255, 0.12); --glow-cyan: 0 0 20px rgba(0, 212, 255, 0.4);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-  body { background:var(--bg-void); color:var(--text-bright); font-family:'Rajdhani',sans-serif; height:100dvh; display:flex; flex-direction:column; overflow:hidden; position:relative; }
-  
-  /* NEURAL GRID BACKGROUND */
-  body::before {
-    content:''; position:fixed; inset:0; z-index:0;
-    background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
-    background-size:40px 40px; pointer-events:none;
-  }
-  body::after {
-    content:''; position:fixed; inset:0; z-index:0;
-    background:radial-gradient(ellipse at 50% 50%, rgba(0,212,255,0.05) 0%, transparent 70%); pointer-events:none;
+  /* UPDATED CAPABILITY GRID */
+  .cap-grid { 
+    display: grid; 
+    /* Force 2 columns on mobile, 4 on desktop */
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 12px; 
+    width: 100%; 
+    max-width: 600px; 
+    margin: 20px auto; 
+    padding: 0 15px; 
+    z-index: 10;
   }
 
-  /* HEADER */
-  header { position:relative; z-index:100; display
-          
+  @media (min-width: 600px) {
+    .cap-grid { 
+      grid-template-columns: repeat(4, 1fr); 
+    }
+  }
+
+  .cap-card { 
+    background: rgba(10, 21, 32, 0.85); 
+    border: 1px solid var(--border); 
+    border-radius: 8px; 
+    padding: 15px 10px; 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+    text-align: left; 
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .cap-card:active { 
+    transform: scale(0.95); 
+    border-color: var(--accent-cyan); 
+    box-shadow: var(--glow-cyan);
+  }
+
+  .cap-icon { font-size: 20px; margin-bottom: 8px; }
+  .cap-label { font-size: 10px; font-weight: 700; color: var(--text-bright); letter-spacing: 1px; text-transform: uppercase; }
+  .cap-desc { font-size: 8px; color: var(--text-dim); font-family: 'Share Tech Mono'; margin-top: 4px; }
+</style>
+
+<div class="cap-grid">
+  <div class="cap-card" onclick="quickAsk('Live market summary Nifty BankNifty')">
+    <div class="cap-icon">📈</div><div class="cap-label">Live Markets</div><div class="cap-desc">Nifty · BankNifty</div>
+  </div>
+  <div class="cap-card" onclick="quickAsk('ORB strategy with OI analysis')">
+    <div class="cap-icon">📊</div><div class="cap-label">Trade Strategy</div><div class="cap-desc">ORB · OI · Options</div>
+  </div>
+  <div class="cap-card" onclick="quickAsk('Write Python code for option chain')">
+    <div class="cap-icon">⌨️</div><div class="cap-label">Code Helper</div><div class="cap-desc">Python · JS</div>
+  </div>
+  <div class="cap-card" onclick="quickAsk('இன்றைய சந்தை நிலவரம் என்ன?')">
+    <div class="cap-icon">🌐</div><div class="cap-label">Tamil Mode</div><div class="cap-desc">தமிழில் பேசலாம்</div>
+  </div>
+  <div class="cap-card" onclick="alert('Upload coming in next patch')">
+    <div class="cap-icon">📁</div><div class="cap-label">Upload File</div><div class="cap-desc">CSV · PDF</div>
+  </div>
+  <div class="cap-card" onclick="quickAsk('Latest stock market news India')">
+    <div class="cap-icon">🔍</div><div class="cap-label">Web Search</div><div class="cap-desc">Real-time Intel</div>
+  </div>
+  <div class="cap-card" onclick="quickAsk('Analyze Option Greeks')">
+    <div class="cap-icon">🧠</div><div class="cap-label">Deep Analysis</div><div class="cap-desc">Research · Math</div>
+  </div>
+  <div class="cap-card" onclick="alert('Voice requires secure context (HTTPS)')">
+    <div class="cap-icon">🎙️</div><div class="cap-label">Voice Input</div><div class="cap-desc">Speak to AI</div>
+  </div>
+</div>
