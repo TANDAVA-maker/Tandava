@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TANDAVA v2.2 | Indian Markets Live</title>
+    <title>TANDAVA AI v3.0 | Universal Intelligence</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,101 +13,151 @@
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); font-family: 'Share Tech Mono', monospace; line-height: 1.4; overflow-x: hidden; }
 
-        /* GAP-UP ALERT */
+        /* ALERT SYSTEM */
         .gap-alert { background: rgba(0, 255, 136, 0.1); border-bottom: 1px solid var(--green); color: var(--green); padding: 10px; text-align: center; font-size: 11px; font-weight: bold; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
-        /* GLOBAL TICKER */
-        .global-hub { padding: 15px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; border-bottom: 1px solid var(--border); }
-        .g-item { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
-        .g-name { font-size: 9px; color: var(--dim); }
-        .g-val { font-size: 12px; font-weight: bold; margin-top: 3px; }
+        /* NAVIGATION ICON GRID */
+        .nav-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
+        .nav-card { 
+            background: var(--panel); border: 1px solid var(--border); border-radius: 15px; 
+            padding: 20px; text-align: center; cursor: pointer; transition: 0.3s;
+        }
+        .nav-card:active { border-color: var(--cyan); background: rgba(0,212,255,0.05); }
+        .nav-icon { font-size: 28px; margin-bottom: 8px; }
+        .nav-label { font-family: 'Orbitron'; font-size: 10px; color: var(--cyan); letter-spacing: 1px; }
 
-        /* MAIN NAV ICON */
-        .market-icon-wrap { padding: 30px; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-        .market-icon { font-size: 40px; margin-bottom: 10px; filter: drop-shadow(0 0 15px var(--cyan)); }
+        /* LIVE SECTIONS */
+        .content-section { padding: 15px; display: none; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
-        /* DRILL DOWN LAYOUT */
-        .drill-section { padding: 15px; display: none; flex-direction: column; gap: 12px; padding-bottom: 100px; }
-        .drill-card { background: rgba(10,21,32,0.8); border: 1px solid var(--border); border-radius: 12px; padding: 15px; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
-        
-        .tile { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--cyan); }
+        .card { background: rgba(10,21,32,0.8); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+        h3 { font-family: 'Orbitron'; font-size: 11px; color: var(--cyan); margin-bottom: 12px; }
+
+        /* INTEL TILE */
+        .tile { 
+            background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; margin-bottom: 8px; 
+            display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--cyan);
+        }
         .up { color: var(--green); } .dn { color: var(--red); }
 
-        /* SLIDE-UP NEWS PANEL */
-        #newsPanel { display: none; position: fixed; bottom: 0; width: 100%; height: 65vh; background: #0d1e2e; border-top: 2px solid var(--cyan); z-index: 1000; padding: 20px; overflow-y: auto; border-radius: 20px 20px 0 0; }
+        /* UNIVERSAL OVERLAY */
+        #intelOverlay { 
+            display: none; position: fixed; bottom: 0; width: 100%; height: 75vh; 
+            background: #0d1e2e; border-top: 2px solid var(--cyan); z-index: 1000; 
+            padding: 20px; overflow-y: auto; border-radius: 20px 20px 0 0;
+        }
+        .close-btn { background: var(--cyan); color: #000; border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 8px; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-<div class="gap-alert">⚠ GIFT NIFTY UP +1.65% | RELIEF RALLY TRIGGERED BY US-IRAN PAUSE</div>
-
-<div class="global-hub">
-    <div class="g-item"><div class="g-name">NASDAQ 100</div><div class="g-val up">21,946.76 (+1.38%)</div></div>
-    <div class="g-item"><div class="g-name">DOW JONES</div><div class="g-val up">46,208.47 (+1.38%)</div></div>
-    <div class="g-item"><div class="g-name">GIFT NIFTY</div><div class="g-val up">22,835.50 (+1.65%)</div></div>
-    <div class="g-item"><div class="g-name">INDIA VIX</div><div class="g-val dn">25.58 (-6.35%)</div></div>
+<div class="gap-alert" id="alertBanner">
+    ⚠ RELIEF RALLY: NIFTY RECLAIMS 23,000 | VIX DROPS 6.5%
 </div>
 
-<div class="market-icon-wrap" id="entryPoint" onclick="openDrillDown()">
-    <div class="market-icon">📈</div>
-    <h2 style="font-family:'Orbitron'; color:var(--cyan); font-size: 16px;">LIVE MARKETS</h2>
-    <p style="font-size: 9px; color: var(--dim);">SCAN INDIAN INDICES & SECTORS</p>
-</div>
-
-<div class="drill-section" id="drillSection">
-    <div class="drill-card">
-        <h3>INDIAN INDICES</h3>
-        <div class="tile" onclick="showSector('Banking')">
-            <div><strong>BANK NIFTY</strong><div style="font-size:10px;color:var(--dim);">PCR: 0.69</div></div>
-            <div class="up">52,192 (+1.47%)</div>
-        </div>
-        <div class="tile" onclick="alert('Nifty 50 Drill-Down Loading...')">
-            <div><strong>NIFTY 50</strong><div style="font-size:10px;color:var(--dim);">Support: 22,800</div></div>
-            <div class="up">23,005 (+2.19%)</div>
-        </div>
-        <div class="tile">
-            <div><strong>SENSEX</strong><div style="font-size:10px;color:var(--dim);">Resistance: 74,500</div></div>
-            <div class="up">74,377 (+2.23%)</div>
-        </div>
+<div class="nav-grid" id="mainHub">
+    <div class="nav-card" onclick="openSection('marketSection')">
+        <div class="nav-icon">📈</div>
+        <div class="nav-label">LIVE MARKETS</div>
+    </div>
+    <div class="nav-card" onclick="openSection('researchSection')">
+        <div class="nav-icon">🧠</div>
+        <div class="nav-label">DEEP RESEARCH</div>
+    </div>
+    <div class="nav-card" onclick="document.getElementById('visionInput').click()">
+        <div class="nav-icon">👁️</div>
+        <div class="nav-label">VISION SCAN</div>
+    </div>
+    <div class="nav-card" onclick="startUniversalVoice()">
+        <div class="nav-icon">🎙️</div>
+        <div class="nav-label">LIVE VOICE</div>
+    </div>
+    <div class="nav-card" onclick="openSection('personalSection')">
+        <div class="nav-icon">📧</div>
+        <div class="nav-label">GMAIL / DRIVE</div>
+    </div>
+    <div class="nav-card" onclick="openSection('codeSection')">
+        <div class="nav-icon">⌨️</div>
+        <div class="nav-label">AGENTIC CODE</div>
     </div>
 </div>
 
-<div id="newsPanel">
-    <h3 id="panelTitle" style="color:var(--cyan); font-family:'Orbitron'; font-size: 14px;">INTEL REPORT</h3>
-    <div id="panelContent" style="margin-top:20px; font-size: 13px;"></div>
-    <button onclick="document.getElementById('newsPanel').style.display='none'" style="width:100%; margin-top:20px; padding:12px; background:var(--cyan); border:none; font-weight:bold; border-radius:8px;">MINIMIZE ANALYTICS</button>
+<input type="file" id="visionInput" style="display:none" onchange="processVision()">
+
+<div class="content-section" id="marketSection">
+    <div class="card">
+        <h3>GLOBAL INDICES</h3>
+        <div class="tile"><span>GIFT NIFTY</span><span class="up">23,215 (+3.3%)</span></div>
+        <div class="tile"><span>NASDAQ 100</span><span class="up">21,977 (+1.4%)</span></div>
+    </div>
+    <div class="card">
+        <h3>INDIAN SECTORS</h3>
+        <div class="tile" onclick="showStockIntel('BANKING')"><span>BANK NIFTY</span><span class="up">52,192 (+1.4%)</span></div>
+        <div class="tile"><span>NIFTY IT</span><span class="up">38,410 (+1.2%)</span></div>
+    </div>
+    <button class="close-btn" onclick="backToHub()">BACK TO HUB</button>
+</div>
+
+<div class="content-section" id="personalSection">
+    <div class="card">
+        <h3>PERSONAL INTELLIGENCE SYNC</h3>
+        <div class="tile" onclick="alert('Scanning Gmail for Trade Confirmations...')"><span>SYNC GMAIL</span><span>CONNECTED</span></div>
+        <div class="tile" onclick="alert('Accessing Google Drive Logs...')"><span>SYNC DRIVE</span><span>CONNECTED</span></div>
+    </div>
+    <p style="font-size: 10px; color: var(--dim); text-align: center;">TANDAVA uses Gemini 3.1 to reference your personal history.</p>
+    <button class="close-btn" onclick="backToHub()">BACK TO HUB</button>
+</div>
+
+<div class="content-section" id="researchSection">
+    <div class="card">
+        <h3>DEEP RESEARCH AGENT</h3>
+        <p style="font-size: 11px; margin-bottom:10px;">Enter any topic for a multi-step autonomous report:</p>
+        <input type="text" placeholder="e.g. Impact of Oil crash on Asian markets" style="width:100%; padding:10px; background:var(--bg); border:1px solid var(--border); color:white; border-radius:5px;">
+        <button class="close-btn" style="margin-top:10px;">GENERATE REPORT</button>
+    </div>
+    <button class="close-btn" onclick="backToHub()">BACK TO HUB</button>
+</div>
+
+<div id="intelOverlay">
+    <h2 id="overlayTitle" style="font-family:'Orbitron'; color:var(--cyan); font-size:14px; margin-bottom:15px;"></h2>
+    <div id="overlayContent" style="font-size:13px; color:var(--text);"></div>
+    <button class="close-btn" onclick="closeOverlay()">MINIMIZE</button>
 </div>
 
 <script>
-    function openDrillDown() {
-        document.getElementById('entryPoint').style.display = 'none';
-        document.getElementById('drillSection').style.display = 'flex';
+    function openSection(id) {
+        document.getElementById('mainHub').style.display = 'none';
+        document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
     }
 
-    const liveIntel = {
-        'HDFC': `<strong>HDFC BANK (Up 1.1%):</strong> Snapping a 4-day losing streak. Board clarified that ex-Chairman Atanu Chakraborty's resignation was not due to ethical concerns. External law firms appointed to review the exit.`,
-        'ICICI': `<strong>ICICI BANK (Up 1.7%):</strong> Trading strong at 1,241 after a potential trend reversal. Outperforming benchmarks despite the recent ₹769 crore GST demand.`,
-        'KOTAK': `<strong>KOTAK BANK (Up 3.5%):</strong> Top gainer today, reaching 368.9. Significant 15.3% surge in Open Interest signals fresh long positioning.`
-    };
+    function backToHub() {
+        document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+        document.getElementById('mainHub').style.display = 'grid';
+    }
 
-    function showSector(name) {
-        const panel = document.getElementById('newsPanel');
-        document.getElementById('panelContent').innerHTML = `
-            <div class="tile" onclick="showNews('HDFC')">HDFC BANK <span class="up">+1.14%</span></div>
-            <div class="tile" onclick="showNews('ICICI')">ICICI BANK <span class="up">+1.77%</span></div>
-            <div class="tile" onclick="showNews('KOTAK')">KOTAK BANK <span class="up">+3.51%</span></div>
-            <div id="intelBox" style="margin-top:20px; padding:15px; background:rgba(255,255,255,0.05); border-radius:10px; display:none;"></div>
+    function showStockIntel(sector) {
+        const overlay = document.getElementById('intelOverlay');
+        document.getElementById('overlayTitle').innerText = sector + " LIVE INTEL";
+        document.getElementById('overlayContent').innerHTML = `
+            <div class="card"><strong>HDFC BANK:</strong> Up 2%. Board reviewing Atanu Chakraborty's exit via external law firms. Governance focus remains high.</div>
+            <div class="card"><strong>KOTAK BANK:</strong> Up 3.5%. Top gainer today. Fresh Long-Build detected in Options data.</div>
+            <div class="card"><strong>ICICI BANK:</strong> Up 1.5%. Holding 1,241 level despite ₹769Cr GST demand news.</div>
         `;
-        panel.style.display = 'block';
+        overlay.style.display = 'block';
     }
 
-    function showNews(stock) {
-        const box = document.getElementById('intelBox');
-        box.style.display = 'block';
-        box.innerHTML = liveIntel[stock];
-        box.scrollIntoView({ behavior: 'smooth' });
+    function processVision() {
+        alert("Gemini 3.1 Vision: Scanning chart/document for patterns and data extraction...");
+    }
+
+    function startUniversalVoice() {
+        alert("Gemini Live: Initializing low-latency voice bridge (English/Tamil)...");
+    }
+
+    function closeOverlay() {
+        document.getElementById('intelOverlay').style.display = 'none';
     }
 </script>
 </body>
