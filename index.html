@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TANDAVA AI | Indian Markets Drill-Down</title>
+    <title>TANDAVA v2.2 | Indian Markets Live</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,184 +13,101 @@
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); font-family: 'Share Tech Mono', monospace; line-height: 1.4; overflow-x: hidden; }
 
-        /* HEADER & TICKER */
-        header { background: var(--panel); border-bottom: 1px solid var(--border); padding: 12px; position: sticky; top: 0; z-index: 100; }
-        .ticker-wrap { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
-        .ticker-item { white-space: nowrap; font-size: 11px; display: flex; gap: 6px; }
+        /* GAP-UP ALERT */
+        .gap-alert { background: rgba(0, 255, 136, 0.1); border-bottom: 1px solid var(--green); color: var(--green); padding: 10px; text-align: center; font-size: 11px; font-weight: bold; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+
+        /* GLOBAL TICKER */
+        .global-hub { padding: 15px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; border-bottom: 1px solid var(--border); }
+        .g-item { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
+        .g-name { font-size: 9px; color: var(--dim); }
+        .g-val { font-size: 12px; font-weight: bold; margin-top: 3px; }
+
+        /* MAIN NAV ICON */
+        .market-icon-wrap { padding: 30px; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .market-icon { font-size: 40px; margin-bottom: 10px; filter: drop-shadow(0 0 15px var(--cyan)); }
+        
+        /* DRILL DOWN LAYOUT */
+        .drill-section { padding: 15px; display: none; flex-direction: column; gap: 12px; padding-bottom: 100px; }
+        .drill-card { background: rgba(10,21,32,0.8); border: 1px solid var(--border); border-radius: 12px; padding: 15px; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+        
+        .tile { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--cyan); }
         .up { color: var(--green); } .dn { color: var(--red); }
 
-        /* MAIN NAVIGATION ICON */
-        .main-nav { padding: 20px; display: flex; justify-content: center; }
-        .live-market-btn { 
-            background: linear-gradient(45deg, #0a1520, #162a3d); 
-            border: 1px solid var(--cyan); 
-            padding: 20px 40px; 
-            border-radius: 15px; 
-            text-align: center; 
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(0,212,255,0.2);
-        }
-        .live-market-btn h2 { font-family: 'Orbitron'; font-size: 18px; color: var(--cyan); margin-bottom: 5px; }
-
-        /* DRILL-DOWN CONTAINER */
-        .drill-container { padding: 15px; display: none; flex-direction: column; gap: 15px; padding-bottom: 100px; }
-        .col-section { background: rgba(10,21,32,0.8); border: 1px solid var(--border); border-radius: 12px; padding: 15px; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .col-section h3 { font-family: 'Orbitron'; font-size: 11px; color: var(--cyan); margin-bottom: 12px; letter-spacing: 1.5px; }
-        
-        /* TILES */
-        .tile { 
-            background: rgba(255,255,255,0.03); 
-            padding: 15px; 
-            border-radius: 8px; 
-            margin-bottom: 10px; 
-            border-left: 4px solid transparent; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-        }
-        .tile:active { background: rgba(0,212,255,0.1); }
-        .idx-tile { border-left-color: var(--cyan); }
-        .tile-info { font-size: 10px; color: var(--dim); margin-top: 4px; }
-
-        /* NEWS PANEL */
-        #newsPanel { 
-            display: none; 
-            background: #0d1e2e; 
-            border: 1px solid var(--cyan); 
-            border-radius: 12px; 
-            padding: 20px; 
-            position: fixed; 
-            bottom: 0; 
-            width: 100%; 
-            height: 60vh; 
-            overflow-y: auto; 
-            z-index: 1001; 
-            animation: slideUp 0.4s cubic-bezier(0, 0.55, 0.45, 1);
-        }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .close-btn { background: var(--cyan); color: #000; border: none; padding: 10px; border-radius: 5px; width: 100%; margin-top: 20px; font-weight: bold; }
-
-        .news-item { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .news-date { font-size: 10px; color: var(--cyan); margin-bottom: 4px; }
+        /* SLIDE-UP NEWS PANEL */
+        #newsPanel { display: none; position: fixed; bottom: 0; width: 100%; height: 65vh; background: #0d1e2e; border-top: 2px solid var(--cyan); z-index: 1000; padding: 20px; overflow-y: auto; border-radius: 20px 20px 0 0; }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="ticker-wrap">
-        <div class="ticker-item">NIFTY 50: <span class="dn">22,512 (-2.60%)</span></div>
-        <div class="ticker-item">BANK NIFTY: <span class="dn">51,437 (-2.4%)</span></div>
-        <div class="ticker-item">INDIA VIX: <span class="up">17.8 (+12%)</span></div>
-    </div>
-</header>
+<div class="gap-alert">⚠ GIFT NIFTY UP +1.65% | RELIEF RALLY TRIGGERED BY US-IRAN PAUSE</div>
 
-<div class="main-nav" id="mainNav">
-    <div class="live-market-btn" onclick="startDrillDown()">
-        <h2>📈 LIVE MARKETS</h2>
-        <p style="font-size: 10px; color: var(--dim);">TAP TO SCAN INDIAN INDICES</p>
-    </div>
+<div class="global-hub">
+    <div class="g-item"><div class="g-name">NASDAQ 100</div><div class="g-val up">21,946.76 (+1.38%)</div></div>
+    <div class="g-item"><div class="g-name">DOW JONES</div><div class="g-val up">46,208.47 (+1.38%)</div></div>
+    <div class="g-item"><div class="g-name">GIFT NIFTY</div><div class="g-val up">22,835.50 (+1.65%)</div></div>
+    <div class="g-item"><div class="g-name">INDIA VIX</div><div class="g-val dn">25.58 (-6.35%)</div></div>
 </div>
 
-<div class="drill-container" id="drillContainer">
-    <div class="col-section" id="indexSection">
-        <h3>SELECT INDEX</h3>
-        <div class="tile idx-tile" onclick="openSector('Banking')">
-            <div><strong>NIFTY BANK</strong><div class="tile-info">PCR: 0.69 (Bearish/Oversold)</div></div>
-            <div class="dn">-2.40%</div>
-        </div>
-        <div class="tile idx-tile" onclick="alert('Nifty 50 Drill-down Coming Soon')">
-            <div><strong>NIFTY 50</strong><div class="tile-info">Support: 22,470 | Res: 23,000</div></div>
-            <div class="dn">-2.60%</div>
-        </div>
-        <div class="tile idx-tile">
-            <div><strong>SENSEX</strong><div class="tile-info">Resistance: 74,500</div></div>
-            <div class="dn">-2.46%</div>
-        </div>
-    </div>
+<div class="market-icon-wrap" id="entryPoint" onclick="openDrillDown()">
+    <div class="market-icon">📈</div>
+    <h2 style="font-family:'Orbitron'; color:var(--cyan); font-size: 16px;">LIVE MARKETS</h2>
+    <p style="font-size: 9px; color: var(--dim);">SCAN INDIAN INDICES & SECTORS</p>
+</div>
 
-    <div class="col-section" id="sectorSection" style="display:none;">
-        <h3 id="sectorTitle">STOCKS</h3>
-        <div id="stockList"></div>
-        <button class="close-btn" style="background:transparent; color:var(--cyan); border:1px solid var(--cyan);" onclick="backToIndex()">← BACK TO INDICES</button>
+<div class="drill-section" id="drillSection">
+    <div class="drill-card">
+        <h3>INDIAN INDICES</h3>
+        <div class="tile" onclick="showSector('Banking')">
+            <div><strong>BANK NIFTY</strong><div style="font-size:10px;color:var(--dim);">PCR: 0.69</div></div>
+            <div class="up">52,192 (+1.47%)</div>
+        </div>
+        <div class="tile" onclick="alert('Nifty 50 Drill-Down Loading...')">
+            <div><strong>NIFTY 50</strong><div style="font-size:10px;color:var(--dim);">Support: 22,800</div></div>
+            <div class="up">23,005 (+2.19%)</div>
+        </div>
+        <div class="tile">
+            <div><strong>SENSEX</strong><div style="font-size:10px;color:var(--dim);">Resistance: 74,500</div></div>
+            <div class="up">74,377 (+2.23%)</div>
+        </div>
     </div>
 </div>
 
 <div id="newsPanel">
-    <h3 id="newsHeader" style="font-family:'Orbitron'; color:var(--cyan); margin-bottom:15px;">INTEL REPORT</h3>
-    <div id="newsContent"></div>
-    <button class="close-btn" onclick="closeNews()">MINIMIZE ANALYTICS</button>
+    <h3 id="panelTitle" style="color:var(--cyan); font-family:'Orbitron'; font-size: 14px;">INTEL REPORT</h3>
+    <div id="panelContent" style="margin-top:20px; font-size: 13px;"></div>
+    <button onclick="document.getElementById('newsPanel').style.display='none'" style="width:100%; margin-top:20px; padding:12px; background:var(--cyan); border:none; font-weight:bold; border-radius:8px;">MINIMIZE ANALYTICS</button>
 </div>
 
 <script>
-    // DATA STORE (March 24, 2026 Context)
-    const marketData = {
-        'Banking': [
-            { name: 'HDFC BANK', symbol: 'HDFCBANK', price: '742.30', change: '-4.89%' },
-            { name: 'ICICI BANK', symbol: 'ICICIBANK', price: '1,225.00', change: '-1.64%' },
-            { name: 'KOTAK BANK', symbol: 'KOTAKBANK', price: '1,782.00', change: '+1.20%' }
-        ]
+    function openDrillDown() {
+        document.getElementById('entryPoint').style.display = 'none';
+        document.getElementById('drillSection').style.display = 'flex';
+    }
+
+    const liveIntel = {
+        'HDFC': `<strong>HDFC BANK (Up 1.1%):</strong> Snapping a 4-day losing streak. Board clarified that ex-Chairman Atanu Chakraborty's resignation was not due to ethical concerns. External law firms appointed to review the exit.`,
+        'ICICI': `<strong>ICICI BANK (Up 1.7%):</strong> Trading strong at 1,241 after a potential trend reversal. Outperforming benchmarks despite the recent ₹769 crore GST demand.`,
+        'KOTAK': `<strong>KOTAK BANK (Up 3.5%):</strong> Top gainer today, reaching 368.9. Significant 15.3% surge in Open Interest signals fresh long positioning.`
     };
 
-    const stockNews = {
-        'HDFCBANK': [
-            { date: 'MAR 24, 2026', text: "Board has appointed external law firms to review former Chairman Atanu Chakraborty's resignation letter." },
-            { date: 'MAR 24, 2026', text: "Bank confirmed firing 3 employees at Dubai branch after internal probe into regulatory lapses." },
-            { date: 'MAR 23, 2026', text: "Stock fell 4.89% on Monday following governance concerns and leadership changes." }
-        ],
-        'ICICIBANK': [
-            { date: 'MAR 20, 2026', text: "Tax authorities slapped a ₹769 Crore GST demand notice for alleged short payment." },
-            { date: 'MAR 24, 2026', text: "Stock showing relative strength despite GST demand, trading near 1,225 support." }
-        ]
-    };
-
-    // LOGIC
-    function startDrillDown() {
-        document.getElementById('mainNav').style.display = 'none';
-        document.getElementById('drillContainer').style.display = 'flex';
-    }
-
-    function openSector(sector) {
-        document.getElementById('indexSection').style.display = 'none';
-        document.getElementById('sectorSection').style.display = 'block';
-        document.getElementById('sectorTitle').innerText = sector.toUpperCase() + " STOCKS";
-        
-        const list = document.getElementById('stockList');
-        list.innerHTML = '';
-        marketData[sector].forEach(s => {
-            const isUp = s.change.includes('+');
-            list.innerHTML += `
-                <div class="tile" onclick="showNews('${s.symbol}')">
-                    <div><strong>${s.name}</strong><div class="tile-info">LTP: ₹${s.price}</div></div>
-                    <div class="${isUp?'up':'dn'}">${s.change}</div>
-                </div>`;
-        });
-    }
-
-    function backToIndex() {
-        document.getElementById('sectorSection').style.display = 'none';
-        document.getElementById('indexSection').style.display = 'block';
-    }
-
-    function showNews(symbol) {
+    function showSector(name) {
         const panel = document.getElementById('newsPanel');
-        const content = document.getElementById('newsContent');
-        document.getElementById('newsHeader').innerText = symbol + " ANALYTICS";
-        
-        const news = stockNews[symbol] || [{date:'N/A', text:'No fresh news available. Showing steady historical trends.'}];
-        content.innerHTML = news.map(n => `
-            <div class="news-item">
-                <div class="news-date">${n.date}</div>
-                <div class="news-text">${n.text}</div>
-            </div>
-        `).join('');
-        
+        document.getElementById('panelContent').innerHTML = `
+            <div class="tile" onclick="showNews('HDFC')">HDFC BANK <span class="up">+1.14%</span></div>
+            <div class="tile" onclick="showNews('ICICI')">ICICI BANK <span class="up">+1.77%</span></div>
+            <div class="tile" onclick="showNews('KOTAK')">KOTAK BANK <span class="up">+3.51%</span></div>
+            <div id="intelBox" style="margin-top:20px; padding:15px; background:rgba(255,255,255,0.05); border-radius:10px; display:none;"></div>
+        `;
         panel.style.display = 'block';
     }
 
-    function closeNews() {
-        document.getElementById('newsPanel').style.display = 'none';
+    function showNews(stock) {
+        const box = document.getElementById('intelBox');
+        box.style.display = 'block';
+        box.innerHTML = liveIntel[stock];
+        box.scrollIntoView({ behavior: 'smooth' });
     }
 </script>
 </body>
