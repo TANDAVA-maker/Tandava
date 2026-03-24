@@ -3,26 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>TANDAVA AI v3.7 | Layout Locked</title>
+<title>TANDAVA AI v3.8 | Tri-Engine Router</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg-void: #020408; --bg-deep: #060d14; --bg-panel: #0a1520; --bg-input: #0d1e2e;
-    --accent-cyan: #00d4ff; --text-bright: #e8f4ff; --text-dim: #3a5a78;
+    --accent-cyan: #00d4ff; --accent-blue: #0066ff; --text-bright: #e8f4ff; --text-dim: #3a5a78;
     --border: rgba(0, 212, 255, 0.15); --glow-cyan: 0 0 20px rgba(0, 212, 255, 0.4);
   }
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-  
-  /* FIXED MOBILE HEIGHT */
   body { background:var(--bg-void); color:var(--text-bright); font-family:'Rajdhani',sans-serif; height:100dvh; display:flex; flex-direction:column; overflow:hidden; position: relative; }
   
-  header { display:flex; justify-content:space-between; align-items: center; padding:12px 20px; border-bottom:1px solid var(--border); background:rgba(6,13,20,0.95); z-index:50; position: relative; flex-shrink: 0; }
+  header { display:flex; justify-content:space-between; align-items: center; padding:12px 20px; border-bottom:1px solid var(--border); background:rgba(6,13,20,0.95); z-index:50; flex-shrink: 0; }
   .logo-name { font-family:'Orbitron',monospace; font-size:18px; color:var(--accent-cyan); letter-spacing:3px; }
-  
   .hdr-btn { background:transparent; border:1px solid var(--border); color:var(--text-dim); padding:8px 14px; cursor:pointer; font-family:'Share Tech Mono'; border-radius:4px; z-index:9999; font-weight: bold; }
-  .hdr-btn:active { border-color:var(--accent-cyan); color:var(--accent-cyan); background: rgba(0, 212, 255, 0.1); }
 
-  /* ADDED PADDING SO MESSAGES DONT HIDE BEHIND INPUT */
   #messages { flex:1; overflow-y:auto; padding:20px; padding-bottom: 90px; display:flex; flex-direction:column; gap:15px; }
   .welcome { text-align:center; padding:40px 20px; font-family:'Share Tech Mono'; color:var(--text-dim); }
   
@@ -33,151 +28,77 @@
   .msg-bubble { padding:12px 16px; border-radius:8px; font-size:15px; line-height:1.6; background:var(--bg-panel); border:1px solid var(--border); }
   .msg.user .msg-bubble { background:rgba(124,58,237,0.15); border-color:rgba(124,58,237,0.4); }
 
-  /* LOCKED TO BOTTOM OF SCREEN */
-  .input-zone { position: fixed; bottom: 0; left: 0; right: 0; width: 100%; padding:15px 20px; background:var(--bg-deep); border-top:1px solid var(--border); display:flex; gap:10px; z-index:100; box-shadow: 0 -10px 20px rgba(0,0,0,0.5); }
+  .input-zone { position: fixed; bottom: 0; left: 0; right: 0; padding:15px 20px; background:var(--bg-deep); border-top:1px solid var(--border); display:flex; gap:10px; z-index:100; }
   #userInput { flex:1; background:var(--bg-input); border:1px solid var(--border); color:white; padding:12px; border-radius:6px; font-family:'Rajdhani'; outline:none; font-size: 16px; }
   #sendBtn { background:var(--accent-cyan); border:none; color:black; font-weight:bold; padding:0 20px; border-radius:6px; cursor:pointer; font-family: 'Orbitron'; }
 
-  /* MODAL */
-  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(2,4,8,0.9); z-index:10000; align-items:center; justify-content:center; flex-direction: column; }
-  .modal-content { background:var(--bg-panel); border:1px solid var(--accent-cyan); width:90%; max-width: 380px; padding:25px; border-radius:8px; box-shadow:var(--glow-cyan); }
-  .modal-title { font-family:'Orbitron'; color:var(--accent-cyan); font-size:18px; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:10px; text-align: center; }
-  .modal-label { font-size:12px; color:var(--text-dim); font-family:'Share Tech Mono'; margin-top:10px; display:block; }
-  .modal-input, .modal-select { width:100%; padding:12px; background:var(--bg-input); border:1px solid var(--border); color:white; margin-top:5px; border-radius:4px; font-family:'Share Tech Mono'; font-size: 14px; }
-  .modal-btn-row { display:flex; justify-content:space-between; gap:10px; margin-top:20px; }
-  .modal-btn-row .hdr-btn { flex: 1; text-align: center; padding: 12px; }
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(2,4,8,0.95); z-index:10000; align-items:center; justify-content:center; }
+  .modal-content { background:var(--bg-panel); border:1px solid var(--accent-cyan); width:90%; max-width: 400px; padding:20px; border-radius:8px; box-shadow:var(--glow-cyan); }
+  .modal-title { font-family:'Orbitron'; color:var(--accent-cyan); font-size:16px; margin-bottom:15px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  .modal-label { font-size:11px; color:var(--text-dim); font-family:'Share Tech Mono'; margin-top:12px; display:block; }
+  .modal-input, .modal-select { width:100%; padding:10px; background:var(--bg-input); border:1px solid var(--border); color:white; margin-top:4px; border-radius:4px; font-family:'Share Tech Mono'; font-size: 13px; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo-name">TANDAVA // 3.7</div>
-  <button class="hdr-btn" onclick="openSettings()" ontouchstart="openSettings()">⚙️ API CONFIG</button>
+  <div class="logo-name">TANDAVA // 3.8</div>
+  <button class="hdr-btn" onclick="openSettings()" ontouchstart="openSettings()">⚙️ ENGINE</button>
 </header>
 
 <div id="messages">
   <div class="welcome">
-    <h2 style="color:var(--accent-cyan); font-family:'Orbitron';">UNIVERSAL INTELLIGENCE ACTIVE</h2>
-    <p style="margin-top:10px;">// SYSTEM READY</p>
-    <p>// REGION: VILUPPURAM, TN [ONLINE]</p>
-    <p style="margin-top:20px; font-size:12px;">Type a command below to begin.</p>
+    <h2 style="color:var(--accent-cyan); font-family:'Orbitron';">TRI-ENGINE ROUTER</h2>
+    <p style="margin-top:10px;">// SYSTEM STATUS: ARMED</p>
+    <p>// REGION: VILUPPURAM, TN</p>
+    <p style="margin-top:20px; font-size:12px;">Go to ⚙️ ENGINE to select Google Gemini, OpenRouter, or DeepSeek.</p>
   </div>
 </div>
 
 <div class="input-zone">
-  <input type="text" id="userInput" placeholder="Issue command to TANDAVA...">
+  <input type="text" id="userInput" placeholder="Ask TANDAVA anything...">
   <button id="sendBtn" onclick="sendMessage()">EXECUTE</button>
 </div>
 
 <div class="modal-overlay" id="settingsModal">
   <div class="modal-content">
-    <div class="modal-title">UNIVERSAL API ROUTER</div>
+    <div class="modal-title">API ROUTER CONFIG</div>
+    
     <span class="modal-label">PROVIDER</span>
     <select id="apiProvider" class="modal-select" onchange="updateProviderDefaults()">
-      <option value="deepseek">DeepSeek (Recommended)</option>
-      <option value="openrouter">OpenRouter (Multi-Model)</option>
+      <option value="google">Google Gemini (Recommended / Free)</option>
+      <option value="openrouter">OpenRouter (Works in India)</option>
+      <option value="deepseek">DeepSeek (Standard)</option>
     </select>
+
     <span class="modal-label">API ENDPOINT URL</span>
-    <input type="text" id="apiUrl" class="modal-input" placeholder="https://api.deepseek.com/chat/completions">
+    <input type="text" id="apiUrl" class="modal-input">
+
     <span class="modal-label">MODEL NAME</span>
-    <input type="text" id="apiModel" class="modal-input" placeholder="deepseek-chat">
-    <span class="modal-label">API KEY (Stored securely on your phone)</span>
-    <input type="password" id="apiKey" class="modal-input" placeholder="sk-...">
-    <div class="modal-btn-row">
-      <button class="hdr-btn" onclick="closeSettings()" ontouchstart="closeSettings()">CANCEL</button>
-      <button class="hdr-btn" style="border-color:var(--accent-cyan); color:var(--accent-cyan);" onclick="saveSettings()" ontouchstart="saveSettings()">SAVE</button>
+    <input type="text" id="apiModel" class="modal-input">
+
+    <span class="modal-label">API KEY (Stored Locally)</span>
+    <input type="password" id="apiKey" class="modal-input" placeholder="Paste your key here...">
+
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button class="hdr-btn" style="flex:1;" onclick="closeSettings()">CANCEL</button>
+      <button class="hdr-btn" style="flex:1; border-color:var(--accent-cyan); color:var(--accent-cyan);" onclick="saveSettings()">SAVE</button>
     </div>
   </div>
 </div>
 
 <script>
-let chatHistory = [{ role: "system", content: "You are TANDAVA, an elite AI trading assistant. You provide sharp, accurate, and concise answers." }];
+let chatHistory = [{ role: "system", content: "You are TANDAVA, an elite AI trading assistant. Provide clear trading math and market analysis." }];
 
 window.onload = () => {
-    document.getElementById('apiProvider').value = localStorage.getItem('tandava_provider') || 'deepseek';
-    document.getElementById('apiUrl').value = localStorage.getItem('tandava_url') || 'https://api.deepseek.com/chat/completions';
-    document.getElementById('apiModel').value = localStorage.getItem('tandava_model') || 'deepseek-chat';
+    // Force set defaults if first time
+    if(!localStorage.getItem('tandava_provider')) updateProviderDefaults();
+    
+    document.getElementById('apiProvider').value = localStorage.getItem('tandava_provider') || 'google';
+    document.getElementById('apiUrl').value = localStorage.getItem('tandava_url') || 'https://generativelanguage.googleapis.com/v1beta/openai/';
+    document.getElementById('apiModel').value = localStorage.getItem('tandava_model') || 'gemini-3.1-flash-preview';
     document.getElementById('apiKey').value = localStorage.getItem('tandava_key') || '';
 };
 
-function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
-function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
-
-function updateProviderDefaults() {
-    const provider = document.getElementById('apiProvider').value;
-    const urlInput = document.getElementById('apiUrl');
-    const modelInput = document.getElementById('apiModel');
-    if (provider === 'deepseek') {
-        urlInput.value = 'https://api.deepseek.com/chat/completions';
-        modelInput.value = 'deepseek-chat';
-    } else if (provider === 'openrouter') {
-        urlInput.value = 'https://openrouter.ai/api/v1/chat/completions';
-        modelInput.value = 'meta-llama/llama-3-8b-instruct:free';
-    }
-}
-
-function saveSettings() {
-    localStorage.setItem('tandava_provider', document.getElementById('apiProvider').value);
-    localStorage.setItem('tandava_url', document.getElementById('apiUrl').value.trim());
-    localStorage.setItem('tandava_model', document.getElementById('apiModel').value.trim());
-    localStorage.setItem('tandava_key', document.getElementById('apiKey').value.trim());
-    closeSettings();
-    appendMessage('assistant', '⚙️ **API Configuration Saved.** Your connection is secured.');
-}
-
-const messagesDiv = document.getElementById('messages');
-const inputField = document.getElementById('userInput');
-
-inputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
-
-function appendMessage(role, text) {
-    if(document.querySelector('.welcome')) document.querySelector('.welcome').remove();
-    const msg = document.createElement('div');
-    msg.className = `msg ${role}`;
-    msg.innerHTML = `<div class="msg-bubble">${text.replace(/\n/g, '<br>')}</div>`;
-    messagesDiv.appendChild(msg);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    return msg;
-}
-
-async function sendMessage() {
-    const text = inputField.value.trim();
-    if (!text) return;
-    const url = localStorage.getItem('tandava_url');
-    const model = localStorage.getItem('tandava_model');
-    const key = localStorage.getItem('tandava_key');
-
-    if (!url || !key) {
-        appendMessage('assistant', '⚠️ **SYSTEM HALT:** API Key missing. Tap ⚙️ API CONFIG to add your key.');
-        return;
-    }
-
-    appendMessage('user', text);
-    inputField.value = '';
-    chatHistory.push({ role: "user", content: text });
-
-    const typingNode = appendMessage('assistant', 'Routing via ' + model + '...');
-
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${key}`
-            },
-            body: JSON.stringify({ model: model, messages: chatHistory, temperature: 0.3 })
-        });
-        const data = await response.json();
-        if (data.error) throw new Error(data.error.message);
-
-        const replyText = data.choices[0].message.content;
-        typingNode.innerHTML = `<div class="msg-bubble">${replyText.replace(/\n/g, '<br>')}</div>`;
-        chatHistory.push({ role: "assistant", content: replyText });
-    } catch (err) {
-        typingNode.innerHTML = `<div class="msg-bubble" style="color:#ff2a6d;">⚠️ **CONNECTION FAILED:** ${err.message}</div>`;
-        chatHistory.pop(); 
-    }
-}
-</script>
-</body>
-</html>
+function openSettings() { document
+                         
