@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>TANDAVA 5.6 | Lite Active</title>
+<title>TANDAVA 5.7 | 2026 Final</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
 <style>
   :root { --bg-void: #020408; --accent-cyan: #00d4ff; --border: rgba(0, 212, 255, 0.3); }
@@ -25,7 +25,7 @@
 <body>
 
 <header>
-  <div class="logo-name">TANDAVA 5.6</div>
+  <div class="logo-name">TANDAVA 5.7</div>
   <button class="hdr-btn" onclick="openSettings()">⚙️ ENGINE</button>
 </header>
 
@@ -66,8 +66,8 @@ async function sendMessage() {
     msgDiv.innerHTML += `<div class="msg user"><div class="msg-bubble">${text}</div></div>`;
     input.value = '';
 
-    // LITE MODEL PATH (More free quota for unverified users)
-    const finalUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-8b:generateContent?key=${key}`;
+    // THE 2026 MARCH STABLE ENDPOINT
+    const finalUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${key}`;
 
     try {
         const response = await fetch(finalUrl, {
@@ -82,9 +82,19 @@ async function sendMessage() {
         if (data.candidates && data.candidates[0].content) {
             reply = data.candidates[0].content.parts[0].text;
         } else if (data.error) {
-            reply = "GOOGLE SAYS: " + data.error.message;
-        } else {
-            reply = "SYSTEM: Response Error. Try a new API key.";
+            // FALLBACK: If 2.5 is busy, try the newest 3-series
+            const fallbackUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-lite-preview:generateContent?key=${key}`;
+            const fbRes = await fetch(fallbackUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
+            });
+            const fbData = await fbRes.json();
+            if (fbData.candidates) {
+                reply = fbData.candidates[0].content.parts[0].text;
+            } else {
+                reply = "GOOGLE ERROR: " + data.error.message;
+            }
         }
         
         msgDiv.innerHTML += `<div class="msg assistant"><div class="msg-bubble">${reply}</div></div>`;
