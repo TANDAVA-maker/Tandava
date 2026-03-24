@@ -1,141 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>TANDAVA AI v2.0 | Indian Markets</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg-void: #020408;
-    --bg-panel: #0a1520;
-    --accent-cyan: #00d4ff;
-    --accent-blue: #0066ff;
-    --accent-violet: #7c3aed;
-    --accent-red: #ff2a6d;
-    --accent-green: #00ff88;
-    --text-bright: #e8f4ff;
-    --text-dim: #3a5a78;
-    --border: rgba(0, 212, 255, 0.12);
-  }
-  
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-  body { 
-    background: var(--bg-void); 
-    color: var(--text-bright); 
-    font-family: 'Rajdhani', sans-serif; 
-    height: 100vh; 
-    display: flex; 
-    flex-direction: column; 
-    overflow: hidden; 
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TANDAVA AI | Indian Markets Drill-Down</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #020408; --panel: #0a1520; --cyan: #00d4ff; --red: #ff2a6d; --green: #00ff88;
+            --text: #e8f4ff; --dim: #3a5a78; --border: rgba(0,212,255,0.15);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); font-family: 'Share Tech Mono', monospace; line-height: 1.4; overflow-x: hidden; }
 
-  /* TICKER SYSTEM */
-  .ticker-bar { background: rgba(2,4,8,0.97); border-bottom: 1px solid var(--border); height: 28px; overflow: hidden; display: flex; align-items: center; z-index: 100; }
-  .ticker-track { display: flex; animation: tickerScroll 60s linear infinite; white-space: nowrap; }
-  @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-  .ticker-item { padding: 0 20px; font-family: 'Share Tech Mono', monospace; font-size: 10px; border-right: 1px solid var(--border); }
-  .up { color: var(--accent-green); } .dn { color: var(--accent-red); }
+        /* HEADER & TICKER */
+        header { background: var(--panel); border-bottom: 1px solid var(--border); padding: 12px; position: sticky; top: 0; z-index: 100; }
+        .ticker-wrap { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .ticker-item { white-space: nowrap; font-size: 11px; display: flex; gap: 6px; }
+        .up { color: var(--green); } .dn { color: var(--red); }
 
-  /* HEADER */
-  header { padding: 12px 18px; background: var(--bg-panel); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-  .logo-name { font-family: 'Orbitron'; font-size: 16px; font-weight: 900; letter-spacing: 3px; color: var(--accent-cyan); }
+        /* MAIN NAVIGATION ICON */
+        .main-nav { padding: 20px; display: flex; justify-content: center; }
+        .live-market-btn { 
+            background: linear-gradient(45deg, #0a1520, #162a3d); 
+            border: 1px solid var(--cyan); 
+            padding: 20px 40px; 
+            border-radius: 15px; 
+            text-align: center; 
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0,212,255,0.2);
+        }
+        .live-market-btn h2 { font-family: 'Orbitron'; font-size: 18px; color: var(--cyan); margin-bottom: 5px; }
 
-  /* INDIAN MARKETS DASHBOARD */
-  .main-content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; display: flex; flex-direction: column; gap: 15px; }
-  .market-section { background: rgba(10,21,32,0.6); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
-  .market-section h3 { font-family: 'Orbitron'; font-size: 11px; color: var(--accent-cyan); margin-bottom: 12px; letter-spacing: 1.5px; }
-  
-  .drill-tile { background: rgba(255,255,255,0.03); padding: 14px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; border-left: 4px solid transparent; }
-  .active-idx { border-left-color: var(--accent-cyan); background: rgba(0, 212, 255, 0.05); }
-  .tile-sub { font-size: 10px; color: var(--text-dim); margin-top: 4px; font-family: 'Share Tech Mono'; }
+        /* DRILL-DOWN CONTAINER */
+        .drill-container { padding: 15px; display: none; flex-direction: column; gap: 15px; padding-bottom: 100px; }
+        .col-section { background: rgba(10,21,32,0.8); border: 1px solid var(--border); border-radius: 12px; padding: 15px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .col-section h3 { font-family: 'Orbitron'; font-size: 11px; color: var(--cyan); margin-bottom: 12px; letter-spacing: 1.5px; }
+        
+        /* TILES */
+        .tile { 
+            background: rgba(255,255,255,0.03); 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 10px; 
+            border-left: 4px solid transparent; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .tile:active { background: rgba(0,212,255,0.1); }
+        .idx-tile { border-left-color: var(--cyan); }
+        .tile-info { font-size: 10px; color: var(--dim); margin-top: 4px; }
 
-  /* ELABORATED VIEW PANEL */
-  #intelPanel { display: none; background: #0d1e2e; border: 1px solid var(--accent-cyan); border-radius: 12px; padding: 20px; margin-top: 10px; }
-  .intel-title { color: var(--accent-cyan); font-family: 'Orbitron'; font-size: 14px; margin-bottom: 10px; }
-  .intel-body { font-size: 13px; line-height: 1.6; color: var(--text-bright); }
+        /* NEWS PANEL */
+        #newsPanel { 
+            display: none; 
+            background: #0d1e2e; 
+            border: 1px solid var(--cyan); 
+            border-radius: 12px; 
+            padding: 20px; 
+            position: fixed; 
+            bottom: 0; 
+            width: 100%; 
+            height: 60vh; 
+            overflow-y: auto; 
+            z-index: 1001; 
+            animation: slideUp 0.4s cubic-bezier(0, 0.55, 0.45, 1);
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .close-btn { background: var(--cyan); color: #000; border: none; padding: 10px; border-radius: 5px; width: 100%; margin-top: 20px; font-weight: bold; }
 
-  /* INPUT DOCK */
-  .input-dock { position: fixed; bottom: 0; width: 100%; padding: 15px; background: var(--bg-void); border-top: 1px solid var(--border); display: flex; gap: 10px; }
-  input { flex: 1; background: #0d1e2e; border: 1px solid var(--text-dim); border-radius: 8px; padding: 12px; color: white; font-size: 14px; }
-  button { background: var(--accent-cyan); border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; color: #000; }
-</style>
+        .news-item { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .news-date { font-size: 10px; color: var(--cyan); margin-bottom: 4px; }
+    </style>
 </head>
 <body>
 
-<div class="ticker-bar">
-  <div class="ticker-track" id="tickerTrack"></div>
-</div>
-
 <header>
-  <div class="logo-name">TANDAVA v2.0</div>
-  <div style="font-size: 8px; color: var(--accent-green);">● ONLINE</div>
+    <div class="ticker-wrap">
+        <div class="ticker-item">NIFTY 50: <span class="dn">22,512 (-2.60%)</span></div>
+        <div class="ticker-item">BANK NIFTY: <span class="dn">51,437 (-2.4%)</span></div>
+        <div class="ticker-item">INDIA VIX: <span class="up">17.8 (+12%)</span></div>
+    </div>
 </header>
 
-<div class="main-content">
-  <div class="market-section">
-    <h3>SELECT INDEX (INDIA)</h3>
-    <div class="drill-tile active-idx" onclick="showSector('Banking')">
-      <strong>BANK NIFTY</strong>
-      <div class="tile-sub">Spot: 51,437 | PCR: 0.78 (Oversold)</div>
+<div class="main-nav" id="mainNav">
+    <div class="live-market-btn" onclick="startDrillDown()">
+        <h2>📈 LIVE MARKETS</h2>
+        <p style="font-size: 10px; color: var(--dim);">TAP TO SCAN INDIAN INDICES</p>
     </div>
-    <div class="drill-tile" onclick="alert('IT Sector analysis currently loading...')">
-      <strong>NIFTY IT</strong>
-      <div class="tile-sub">Spot: 38,521 | Resistance at 39,000</div>
-    </div>
-  </div>
-
-  <div id="sectorContainer" class="market-section" style="display:none;">
-    <h3 id="sectorLabel">SECTOR DETAILS</h3>
-    <div class="drill-tile" onclick="elaborate('HDFCBANK')">HDFC BANK <span class="dn">-4.89%</span></div>
-    <div class="drill-tile" onclick="elaborate('KOTAK')">KOTAK MAHINDRA <span class="up">+2.15%</span></div>
-    <div class="drill-tile" onclick="elaborate('ICICI')">ICICI BANK <span class="up">+1.48%</span></div>
-  </div>
-
-  <div id="intelPanel">
-    <div class="intel-title" id="intelName">STOCK INTEL</div>
-    <div class="intel-body" id="intelContent"></div>
-    <button style="margin-top:15px; background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); width:100%; padding:10px;" onclick="document.getElementById('intelPanel').style.display='none'">CLOSE ANALYSIS</button>
-  </div>
 </div>
 
-<div class="input-dock">
-  <input type="text" placeholder="Analyze market news..." id="userInput">
-  <button onclick="alert('Connection established. Please host on GitHub to enable AI chat.')">SCAN</button>
+<div class="drill-container" id="drillContainer">
+    <div class="col-section" id="indexSection">
+        <h3>SELECT INDEX</h3>
+        <div class="tile idx-tile" onclick="openSector('Banking')">
+            <div><strong>NIFTY BANK</strong><div class="tile-info">PCR: 0.69 (Bearish/Oversold)</div></div>
+            <div class="dn">-2.40%</div>
+        </div>
+        <div class="tile idx-tile" onclick="alert('Nifty 50 Drill-down Coming Soon')">
+            <div><strong>NIFTY 50</strong><div class="tile-info">Support: 22,470 | Res: 23,000</div></div>
+            <div class="dn">-2.60%</div>
+        </div>
+        <div class="tile idx-tile">
+            <div><strong>SENSEX</strong><div class="tile-info">Resistance: 74,500</div></div>
+            <div class="dn">-2.46%</div>
+        </div>
+    </div>
+
+    <div class="col-section" id="sectorSection" style="display:none;">
+        <h3 id="sectorTitle">STOCKS</h3>
+        <div id="stockList"></div>
+        <button class="close-btn" style="background:transparent; color:var(--cyan); border:1px solid var(--cyan);" onclick="backToIndex()">← BACK TO INDICES</button>
+    </div>
+</div>
+
+<div id="newsPanel">
+    <h3 id="newsHeader" style="font-family:'Orbitron'; color:var(--cyan); margin-bottom:15px;">INTEL REPORT</h3>
+    <div id="newsContent"></div>
+    <button class="close-btn" onclick="closeNews()">MINIMIZE ANALYTICS</button>
 </div>
 
 <script>
-  // TICKER DATA
-  const TICKERS = [
-    {n:"NIFTY 50",p:"22,512",c:"-1.2%",up:false},
-    {n:"BANK NIFTY",p:"51,437",c:"+0.4%",up:true},
-    {n:"INDIA VIX",p:"25.08",c:"-6.1%",up:false},
-    {n:"RELIANCE",p:"2,942",c:"+0.8%",up:true}
-  ];
-  const track = document.getElementById('tickerTrack');
-  track.innerHTML = [...TICKERS, ...TICKERS].map(t => `
-    <div class="ticker-item">${t.n}: <span class="${t.up?'up':'dn'}">${t.p} (${t.c})</span></div>
-  `).join('');
+    // DATA STORE (March 24, 2026 Context)
+    const marketData = {
+        'Banking': [
+            { name: 'HDFC BANK', symbol: 'HDFCBANK', price: '742.30', change: '-4.89%' },
+            { name: 'ICICI BANK', symbol: 'ICICIBANK', price: '1,225.00', change: '-1.64%' },
+            { name: 'KOTAK BANK', symbol: 'KOTAKBANK', price: '1,782.00', change: '+1.20%' }
+        ]
+    };
 
-  // DRILL-DOWN LOGIC
-  function showSector(name) {
-    document.getElementById('sectorContainer').style.display = 'block';
-    document.getElementById('sectorLabel').innerText = name.toUpperCase() + " STOCKS";
-  }
+    const stockNews = {
+        'HDFCBANK': [
+            { date: 'MAR 24, 2026', text: "Board has appointed external law firms to review former Chairman Atanu Chakraborty's resignation letter." },
+            { date: 'MAR 24, 2026', text: "Bank confirmed firing 3 employees at Dubai branch after internal probe into regulatory lapses." },
+            { date: 'MAR 23, 2026', text: "Stock fell 4.89% on Monday following governance concerns and leadership changes." }
+        ],
+        'ICICIBANK': [
+            { date: 'MAR 20, 2026', text: "Tax authorities slapped a ₹769 Crore GST demand notice for alleged short payment." },
+            { date: 'MAR 24, 2026', text: "Stock showing relative strength despite GST demand, trading near 1,225 support." }
+        ]
+    };
 
-  const stockDatabase = {
-    'HDFCBANK': `<strong>WHY DOWN?</strong><br>• Board approved external investigation into Dubai branch regulatory lapses.<br>• Termination of 3 employees for 'unethical practices' in mis-selling financial products.<br>• Resignation of Chairman Atanu Chakraborty sparked governance concerns.`,
-    'KOTAK': `<strong>WHY UP?</strong><br>• Nomura upgraded stock to 'BUY' with a target of ₹445.<br>• Market views Kotak as a 'Safe Haven' while HDFC Bank faces internal audits.`,
-    'ICICI': `<strong>WHY UP?</strong><br>• Analysts maintain it as a 'preferred compounder' due to strong balance sheet health.<br>• Significant institutional buying observed at 1,500 levels.`
-  };
+    // LOGIC
+    function startDrillDown() {
+        document.getElementById('mainNav').style.display = 'none';
+        document.getElementById('drillContainer').style.display = 'flex';
+    }
 
-  function elaborate(id) {
-    const panel = document.getElementById('intelPanel');
-    document.getElementById('intelName').innerText = id + " ANALYSIS";
-    document.getElementById('intelContent').innerHTML = stockDatabase[id];
-    panel.style.display = 'block';
-    panel.scrollIntoView({ behavior: 'smooth' });
-  }
+    function openSector(sector) {
+        document.getElementById('indexSection').style.display = 'none';
+        document.getElementById('sectorSection').style.display = 'block';
+        document.getElementById('sectorTitle').innerText = sector.toUpperCase() + " STOCKS";
+        
+        const list = document.getElementById('stockList');
+        list.innerHTML = '';
+        marketData[sector].forEach(s => {
+            const isUp = s.change.includes('+');
+            list.innerHTML += `
+                <div class="tile" onclick="showNews('${s.symbol}')">
+                    <div><strong>${s.name}</strong><div class="tile-info">LTP: ₹${s.price}</div></div>
+                    <div class="${isUp?'up':'dn'}">${s.change}</div>
+                </div>`;
+        });
+    }
+
+    function backToIndex() {
+        document.getElementById('sectorSection').style.display = 'none';
+        document.getElementById('indexSection').style.display = 'block';
+    }
+
+    function showNews(symbol) {
+        const panel = document.getElementById('newsPanel');
+        const content = document.getElementById('newsContent');
+        document.getElementById('newsHeader').innerText = symbol + " ANALYTICS";
+        
+        const news = stockNews[symbol] || [{date:'N/A', text:'No fresh news available. Showing steady historical trends.'}];
+        content.innerHTML = news.map(n => `
+            <div class="news-item">
+                <div class="news-date">${n.date}</div>
+                <div class="news-text">${n.text}</div>
+            </div>
+        `).join('');
+        
+        panel.style.display = 'block';
+    }
+
+    function closeNews() {
+        document.getElementById('newsPanel').style.display = 'none';
+    }
 </script>
 </body>
 </html>
